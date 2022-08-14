@@ -32,4 +32,10 @@
     <log message="Data set saved to disk"/>
   </route>
 
+  <route id="processEachNasaDataFileRoute">
+    <from uri="file:{{nasa.iotsim.data}}?antInclude=*.txt&amp;exclude=readme.txt&amp;delete=false"/> 
+
+    <log message="Nasa> Processing File - ${file:name}"/>
+  </route>
+
 </routes>
