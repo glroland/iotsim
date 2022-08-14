@@ -1,0 +1,35 @@
+<routes id="camel" xmlns="http://camel.apache.org/schema/spring">
+
+  <route id="downloadNasaDataSetRoute">
+    <from uri="timer:runOnce?repeatCount=1&amp;delay=1000"/>
+    <choice>
+      <when>
+        <simple>${bean:fileUtils?method=exists('/tmp/iotsim/nasa/data.zip')} == false</simple>
+        <log message="Downloading dataset from NASA server"/>
+        <to uri="https://data.nasa.gov/download/ff5v-kuh6/application%2Fzip"/>
+        <log message="Data set successfully downloaded."/>
+        <to uri="file:/tmp/iotsim/nasa?fileName=pending-data.zip"/> 
+      </when>
+      <otherwise>
+          <log message="Skipping download - file already exists locally"/>  
+      </otherwise>
+    </choice>
+  </route>
+
+  <route id="unzipNasaDataSetRoute">
+    <from uri="file:/tmp/iotsim/nasa?fileName=pending-data.zip"/> 
+
+    <log message="Unzipping data set."/>
+    <unmarshal><zipFile  usingIterator="true" /></unmarshal>
+
+    <split streaming="true" parallelProcessing="false">
+        <simple>${body}</simple>
+        <convertBodyTo type="java.lang.String"/>
+        <log message="Writing file: ${header.CamelFileName}" />
+        <to uri="file:/tmp/iotsim/nasa/contents"/>
+    </split>
+
+    <log message="Data set saved to disk"/>
+  </route>
+
+</routes>

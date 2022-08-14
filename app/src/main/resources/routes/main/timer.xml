@@ -1,0 +1,8 @@
+<routes id="camel" xmlns="http://camel.apache.org/schema/spring">
+
+  <route id="timerRoute">
+    <from uri="timer:timer?period=5000"/>
+    <log message="${body}"/>
+  </route>
+
+</routes>
