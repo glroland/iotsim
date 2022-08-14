@@ -18,4 +18,13 @@ public class FileUtils
         File file = new File(filename);
         return file.exists();
     }
+
+    public int countFiles(String directory)
+    {
+        File file = new File(directory);
+        if (!file.exists())
+            return 0;
+
+        return file.list().length;
+    }
 }

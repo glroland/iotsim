@@ -4,20 +4,20 @@
     <from uri="timer:runOnce?repeatCount=1&amp;delay=1000"/>
     <choice>
       <when>
-        <simple>${bean:fileUtils?method=exists('/tmp/iotsim/nasa/data.zip')} == false</simple>
+        <simple>${bean:fileUtils?method=countFiles({{nasa.iotsim.data}})} == 0</simple>
         <log message="Downloading dataset from NASA server"/>
         <to uri="https://data.nasa.gov/download/ff5v-kuh6/application%2Fzip"/>
         <log message="Data set successfully downloaded."/>
-        <to uri="file:/tmp/iotsim/nasa?fileName=pending-data.zip"/> 
+        <to uri="file:{{iotsim.data}}?fileName=nasa.zip"/> 
       </when>
       <otherwise>
-          <log message="Skipping download - file already exists locally"/>  
+          <log message="Skipping download - data already exists locally"/>  
       </otherwise>
     </choice>
   </route>
 
   <route id="unzipNasaDataSetRoute">
-    <from uri="file:/tmp/iotsim/nasa?fileName=pending-data.zip"/> 
+    <from uri="file:{{iotsim.data}}?fileName=nasa.zip"/> 
 
     <log message="Unzipping data set."/>
     <unmarshal><zipFile  usingIterator="true" /></unmarshal>
@@ -26,7 +26,7 @@
         <simple>${body}</simple>
         <convertBodyTo type="java.lang.String"/>
         <log message="Writing file: ${header.CamelFileName}" />
-        <to uri="file:/tmp/iotsim/nasa/contents"/>
+        <to uri="file:{{nasa.iotsim.data}}"/>
     </split>
 
     <log message="Data set saved to disk"/>
