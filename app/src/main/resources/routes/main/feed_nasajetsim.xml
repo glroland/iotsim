@@ -34,7 +34,7 @@
 
   <route id="processEachNasaDataFileRoute">
     <from uri="file:{{nasa.iotsim.data}}?antInclude=test_*.txt&amp;exclude=readme.txt&amp;delete=false"/> 
-    <log message="Nasa> Processing File - ${file:name}"/>
+    <log message="Nasa> File Processing BEGINNING - ${file:name}"/>
       
     <split streaming="true">
       <tokenize token="\n" />
@@ -43,8 +43,13 @@
         <bindy type="Csv"  classType="com.glroland.iotsim.nasa.EngineSensorMeasurement"  />
       </unmarshal>
 
-      <log message="Item: ${body}"/>
+      <!-- log message="Item: ${body}" / -->
+      <to uri="kafka:{{nasa.iotsim.topic}}?brokers={{iotsim.kafka.brokers}}&amp;breakOnFirstError=true" />
+
     </split>
+
+    <log message="Nasa> File Processing COMPLETED - ${file:name}"/>
+  
   </route>
 
 </routes>
